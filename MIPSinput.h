@@ -12,6 +12,7 @@
 #include <string>
 #include <stdint.h>
 #include <istream>
+#include <vector>
 
 #define INSTRUCTION_SIZE_BYTES 4
 
@@ -57,9 +58,11 @@ private:
 	int		traceStart;
 	int		traceEnd;
 
-	// binary input file members
-	int		numInstructions;
-	uint32_t *instructions;
+	// binary input file members and methods
+	int				numInstructions;
+	uint32_t 		*instructions;
+	vector<string> 	instructionStrings;
+	void			SwapBitOrder(uint8_t* byte);
 
 	// string to hold error message
 	bool	errorOccured;

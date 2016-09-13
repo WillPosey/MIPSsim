@@ -20,6 +20,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
+	/*
 	std::cout << "input: " << input.GetInputFilename() << std::endl;
 	std::cout << "output: " << input.GetOutputFilename() << std::endl;
 	std::cout << "operation: " << input.GetOperation() << std::endl;
@@ -28,6 +29,9 @@ int main(int argc, char** argv)
 		std::cout << "trace start: " << input.GetTraceStart() << std::endl;
 		std::cout << "trace end: " << input.GetTraceEnd() << std::endl;
 	}
+	*/
+
+	input.ParseBinaryFile();
 
 	return 0;
 }

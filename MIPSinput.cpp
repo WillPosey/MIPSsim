@@ -26,7 +26,7 @@ using namespace std;
  **************************************************************/
 MIPSinput::~MIPSinput()
 {
-	//delete instructions;
+	delete instructions;
 }
 
 /******************************************************************************
@@ -82,7 +82,39 @@ bool MIPSinput::ParseInput(int optionCount, char** options)
  ******************************************************************************/
 void MIPSinput::ParseBinaryFile()
 {
-	//ifstream binStream (inputFileName.c_str(), ios::binary);
+	int sizeBytes, bitVal;
+	streampos start, end;
+	uint8_t byte;
+
+	ifstream binStream (inputFileName.c_str(), ios::binary);
+	if(binStream)
+	{
+		start = binStream.tellg();
+		binStream.seekg(0, ios::end);
+		end = binStream.tellg();
+		sizeBytes = end - start;
+		numInstructions = sizeBytes / 4.0;
+		instructions = new uint32_t[numInstructions];
+		binStream.seekg(0, ios::beg);
+		for(int i=0; i<numInstructions; i++)
+			for(int j=0; j<4; j++)
+			{
+				binStream.read((char*)&byte, 1);
+				SwapBitOrder(&byte);
+				instructions[i] |= (byte<<(j*8));
+			}
+		binStream.close();
+
+		for(int i=0; i<numInstructions; i++)
+		{
+			for(int bit=0; bit<32; bit++)
+			{
+				bitVal = ( instructions[i] & (1<<bit) ) ? 1 : 0;
+				cout << bitVal;
+			}
+			cout << endl;
+		}
+	}
 }
 
 /******************************************************************************
@@ -96,6 +128,25 @@ void MIPSinput::PrintError()
 {
 	if(errorOccured)
 		cout << errorMessage << endl;
+}
+
+/******************************************************************************
+ * 		Method:			MIPSinput::SwapBitOrder
+ *
+ * 		Parameters:		uint8_t* byte:	Byte to swap bit order for
+ * 		Return:
+ * 		Description:	Swaps the bit order of the input byte
+ ******************************************************************************/
+void MIPSinput::SwapBitOrder(uint8_t* byte)
+{
+	uint8_t temp = 0;
+	int bitVal;
+	for(int i=7, j=0; i>=0 && j<8; i--, j++)
+	{
+		bitVal = ( (*byte) & (1<<i) ) ? 1 : 0;
+		temp |= (bitVal<<j);
+	}
+	*byte = temp;
 }
 
 
