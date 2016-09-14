@@ -6,6 +6,7 @@
  *      Project 1: MIPS Disassembler
  ************************************************/
 #include "MIPSinput.h"
+#include "MIPSdecoder.h"
 #include <iostream>
 
 /**************************************************************
@@ -13,25 +14,19 @@
  **************************************************************/
 int main(int argc, char** argv)
 {
-	MIPSinput input;
+	MIPSinput	input;
+	//MIPSoutput	output;
+
 	if( ! input.ParseInput(argc, argv) )
 	{
 		input.PrintError();
 		return 0;
 	}
 
-	/*
-	std::cout << "input: " << input.GetInputFilename() << std::endl;
-	std::cout << "output: " << input.GetOutputFilename() << std::endl;
-	std::cout << "operation: " << input.GetOperation() << std::endl;
-	if(input.IsTraceOptPresent())
-	{
-		std::cout << "trace start: " << input.GetTraceStart() << std::endl;
-		std::cout << "trace end: " << input.GetTraceEnd() << std::endl;
-	}
-	*/
-
 	input.ParseBinaryFile();
+
+	MIPSdecoder	decoder (input.GetInstructionStrings());
+	decoder.Disassemble();
 
 	return 0;
 }

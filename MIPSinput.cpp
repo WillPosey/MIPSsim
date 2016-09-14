@@ -82,10 +82,13 @@ bool MIPSinput::ParseInput(int optionCount, char** options)
  ******************************************************************************/
 void MIPSinput::ParseBinaryFile()
 {
-	int sizeBytes, bitVal;
+	int sizeBytes;
 	streampos start, end;
 	uint8_t byte;
+	char currentInstruction[32], bitVal;
 
+	// Open the binary input file, get its size, and determine
+	// the number of instructions. Read in each instruction to a uint32_t
 	ifstream binStream (inputFileName.c_str(), ios::binary);
 	if(binStream)
 	{
@@ -105,14 +108,15 @@ void MIPSinput::ParseBinaryFile()
 			}
 		binStream.close();
 
+		// Convert the binary values to strings for decoding
 		for(int i=0; i<numInstructions; i++)
 		{
 			for(int bit=0; bit<32; bit++)
 			{
-				bitVal = ( instructions[i] & (1<<bit) ) ? 1 : 0;
-				cout << bitVal;
+				bitVal = ( instructions[i] & (1<<bit) ) ? '1' : '0';
+				currentInstruction[bit] = bitVal;
 			}
-			cout << endl;
+			instructionStrings.push_back(currentInstruction);
 		}
 	}
 }
@@ -147,6 +151,25 @@ void MIPSinput::SwapBitOrder(uint8_t* byte)
 		temp |= (bitVal<<j);
 	}
 	*byte = temp;
+}
+
+/******************************************************************************
+ * 		Method:			MIPSinput::GetBinaryInstructions
+ *
+ * 		Parameters:		uint32_t* binInstructions:	Pointer to hold instructions
+ * 						int bufferLength: Size of the memory referenced by the pointer
+ * 		Return:			0 on success, -1 if buffer too small
+ * 		Description:	Returns binary instructions in uint32_t* parameter
+ ******************************************************************************/
+int MIPSinput::GetBinaryInstructions(uint32_t* binInstructions, int bufferLength)
+{
+	if(bufferLength < numInstructions)
+		return -1;
+
+	for(int i=0; i<numInstructions; i++)
+		binInstructions[i] = instructions[i];
+
+	return 0;
 }
 
 

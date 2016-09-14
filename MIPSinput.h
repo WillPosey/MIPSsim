@@ -14,8 +14,6 @@
 #include <istream>
 #include <vector>
 
-#define INSTRUCTION_SIZE_BYTES 4
-
 using namespace std;
 
 class MIPSinput {
@@ -37,6 +35,11 @@ public:
 	bool	IsTraceOptPresent()	{return traceOptionPresent;}
 	int 	GetTraceStart()		{return traceOptionPresent ? traceStart : -1;}
 	int 	GetTraceEnd()		{return traceOptionPresent ? traceEnd : -1;}
+
+	// Methods to retrieve instruction data from input file
+	int		GetNumberInstructions(){return numInstructions;}
+	int		GetBinaryInstructions(uint32_t* binInstructions, int bufferLength);
+	vector<string> GetInstructionStrings(){return instructionStrings;}
 
 private:
 
