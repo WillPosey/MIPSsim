@@ -7,27 +7,15 @@
  *
  *      This class is used to read command line input,
  *      as well as the input binary file holding the 32 bit
- *      MIPS instructions
+ *      MIPS instructions and data
  **************************************************************/
 #include "MIPSinput.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 
 using namespace std;
-
-/**************************************************************
- * 		Method:			MIPSinput Destructor
- *
- * 		Parameters:
- * 		Return:
- * 		Description:	Frees the memory allocated to
- * 						the instructions pointer
- **************************************************************/
-MIPSinput::~MIPSinput()
-{
-	delete instructions;
-}
 
 /******************************************************************************
  * 		Method:			MIPSinput::ParseInput
@@ -83,8 +71,9 @@ bool MIPSinput::ParseInput(int optionCount, char** options)
 void MIPSinput::ParseBinaryFile()
 {
 	int sizeBytes;
-	streampos start, end;
+	streampos start, finish;
 	uint8_t byte;
+	BinaryInfo content;
 	char currentInstruction[32], bitVal;
 
 	// Open the binary input file, get its size, and determine
@@ -94,29 +83,32 @@ void MIPSinput::ParseBinaryFile()
 	{
 		start = binStream.tellg();
 		binStream.seekg(0, ios::end);
-		end = binStream.tellg();
-		sizeBytes = end - start;
-		numInstructions = sizeBytes / 4.0;
-		instructions = new uint32_t[numInstructions];
+		finish = binStream.tellg();
+		sizeBytes = finish - start;
+		numLocations = sizeBytes / 4.0;
 		binStream.seekg(0, ios::beg);
-		for(int i=0; i<numInstructions; i++)
+		for(int i=0; i<numLocations; i++)
+		{
+			content.binaryValue = 0;
 			for(int j=0; j<4; j++)
 			{
 				binStream.read((char*)&byte, 1);
 				SwapBitOrder(&byte);
-				instructions[i] |= (byte<<(j*8));
+				content.binaryValue |= (byte<<(j*8));
 			}
+			binaryInput.push_back(content);
+        }
 		binStream.close();
 
 		// Convert the binary values to strings for decoding
-		for(int i=0; i<numInstructions; i++)
+		for(int i=0; i<numLocations; i++)
 		{
 			for(int bit=0; bit<32; bit++)
 			{
-				bitVal = ( instructions[i] & (1<<bit) ) ? '1' : '0';
+				bitVal = ( binaryInput[i].binaryValue & (1<<bit) ) ? '1' : '0';
 				currentInstruction[bit] = bitVal;
 			}
-			instructionStrings.push_back(currentInstruction);
+			binaryInput[i].binaryString = string(currentInstruction);
 		}
 	}
 }
@@ -151,25 +143,6 @@ void MIPSinput::SwapBitOrder(uint8_t* byte)
 		temp |= (bitVal<<j);
 	}
 	*byte = temp;
-}
-
-/******************************************************************************
- * 		Method:			MIPSinput::GetBinaryInstructions
- *
- * 		Parameters:		uint32_t* binInstructions:	Pointer to hold instructions
- * 						int bufferLength: Size of the memory referenced by the pointer
- * 		Return:			0 on success, -1 if buffer too small
- * 		Description:	Returns binary instructions in uint32_t* parameter
- ******************************************************************************/
-int MIPSinput::GetBinaryInstructions(uint32_t* binInstructions, int bufferLength)
-{
-	if(bufferLength < numInstructions)
-		return -1;
-
-	for(int i=0; i<numInstructions; i++)
-		binInstructions[i] = instructions[i];
-
-	return 0;
 }
 
 

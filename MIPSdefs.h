@@ -10,25 +10,29 @@
 #define MIPSDEFS_H_
 
 #define INSTRUCTION_SIZE_BYTES 4
+
 #define ADDRESS_START 600
+#define DATA_REGION_START 716
 
 #include <string>
+#include <stdint.h>
 
 using namespace std;
 
-typedef struct Instruction_Info_t
+/* Holds the binary information for each memory location */
+typedef struct BinaryInfo_t
 {
-    string  binaryInstruction;
-    string  disassembledInstruction;
-    string  bitGroup_1;
-    string  bitGroup_2;
-    string  bitGroup_3;
-    string  bitGroup_4;
-    string  bitGroup_5;
-    string  bitGroup_6;
-    string  addressString;
-    int     address;
-    int     breakPoint;
-} Instruction_Info;
+    uint32_t    binaryValue;
+    string      binaryString;
+} BinaryInfo;
+
+/* Holds the information for each memory location, either instruction or data memory */
+typedef struct MemoryLocation_t
+{
+    uint8_t     locationType;
+    int         address;
+    BinaryInfo  content;
+    string      instruction;
+} MemoryLocation;
 
 #endif //MIPSDEFS_H_

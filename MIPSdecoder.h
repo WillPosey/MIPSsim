@@ -17,16 +17,15 @@ using namespace std;
 
 class MIPSdecoder {
 public:
-	MIPSdecoder(vector<string> instructions);
-	virtual ~MIPSdecoder();
+	MIPSdecoder(vector<BinaryInfo> binaryInput);
+	virtual ~MIPSdecoder(){}
+
 	void Disassemble();
-	vector<Instruction_Info> GetResults();
+	vector<MemoryLocation> GetResults();
 
 private:
-    vector<Instruction_Info> MIPS_Instructions;
-    int numInstructions;
-    void AssignBitGroups();
-
+    vector<MemoryLocation> memoryLocations;
+    int numLocations;
 };
 
 #endif /* MIPSDECODER_H_ */

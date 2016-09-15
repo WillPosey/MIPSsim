@@ -9,6 +9,8 @@
 #ifndef MIPSINPUT_H_
 #define MIPSINPUT_H_
 
+#include "MIPSdefs.h"
+
 #include <string>
 #include <stdint.h>
 #include <istream>
@@ -18,8 +20,9 @@ using namespace std;
 
 class MIPSinput {
 public:
+    // Generic constructor and destructor
 	MIPSinput(){}
-	virtual ~MIPSinput();
+	virtual ~MIPSinput(){}
 
 	// Methods to parse command line and file input
 	bool	ParseInput(int optionCount, char** options);
@@ -37,9 +40,8 @@ public:
 	int 	GetTraceEnd()		{return traceOptionPresent ? traceEnd : -1;}
 
 	// Methods to retrieve instruction data from input file
-	int		GetNumberInstructions(){return numInstructions;}
-	int		GetBinaryInstructions(uint32_t* binInstructions, int bufferLength);
-	vector<string> GetInstructionStrings(){return instructionStrings;}
+	int                 GetNumberMemoryLocations()  {return numLocations;}
+	vector<BinaryInfo>  GetBinaryInput()            {return binaryInput;}
 
 private:
 
@@ -62,10 +64,9 @@ private:
 	int		traceEnd;
 
 	// binary input file members and methods
-	int				numInstructions;
-	uint32_t 		*instructions;
-	vector<string> 	instructionStrings;
-	void			SwapBitOrder(uint8_t* byte);
+	int				    numLocations;
+	vector<BinaryInfo>  binaryInput;
+	void			    SwapBitOrder(uint8_t* byte);
 
 	// string to hold error message
 	bool	errorOccured;

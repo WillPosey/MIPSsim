@@ -24,8 +24,7 @@ int main(int argc, char** argv)
 	}
 
 	input.ParseBinaryFile();
-
-	MIPSdecoder	decoder (input.GetInstructionStrings());
+	MIPSdecoder	decoder ( input.GetBinaryInput() );
 	decoder.Disassemble();
 
 	return 0;
