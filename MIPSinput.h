@@ -10,23 +10,31 @@
 #define MIPSINPUT_H_
 
 #include "MIPSdefs.h"
+#include "MIPS_Buffer.h"
+#include "WorkThread.h"
 
 #include <string>
 #include <stdint.h>
 #include <istream>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
+// used for WorkThread thread function
+void* readInput(void*);
+
 class MIPSinput {
 public:
-    // Generic constructor and destructor
-	MIPSinput(){}
+    // allow thread function access to private members
+    friend void* readInput(void*);
+
+	MIPSinput(MIPS_Buffer<BinaryInfo> &input):binaries(input){thread = new WorkThread(readInput,this);}
 	virtual ~MIPSinput(){}
 
 	// Methods to parse command line and file input
 	bool	ParseInput(int optionCount, char** options);
-	void	ParseBinaryFile();
+	void	ParseBinaryFile(){thread->Activate();}
 
 	// Prints error from ParseInput()
 	void	PrintError();
@@ -40,8 +48,8 @@ public:
 	int 	GetTraceEnd()		{return traceOptionPresent ? traceEnd : -1;}
 
 	// Methods to retrieve instruction data from input file
-	int                 GetNumberMemoryLocations()  {return numLocations;}
-	vector<BinaryInfo>  GetBinaryInput()            {return binaryInput;}
+	int     GetNumberMemoryLocations()  {return numLocations;}
+	//vector<BinaryInfo>  GetBinaryInput()            {return binaryInput;}
 
 private:
 
@@ -64,13 +72,17 @@ private:
 	int		traceEnd;
 
 	// binary input file members and methods
-	int				    numLocations;
-	vector<BinaryInfo>  binaryInput;
-	void			    SwapBitOrder(uint8_t* byte);
+	vector<BinaryInfo>       binaryInput;
+	MIPS_Buffer<BinaryInfo>  &binaries;
+	int		numLocations;
+	void    SwapBitOrder(uint8_t* byte);
 
 	// string to hold error message
 	bool	errorOccured;
 	string	errorMessage;
+
+	// WorkThread used to carry out the retrieval of the binary input
+	WorkThread* thread;
 };
 
 #endif /* MIPSINPUT_H_ */

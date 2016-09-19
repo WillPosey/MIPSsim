@@ -12,6 +12,7 @@
 #include "MIPSinput.h"
 
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <fstream>
 
@@ -62,55 +63,62 @@ bool MIPSinput::ParseInput(int optionCount, char** options)
 }
 
 /******************************************************************************
- * 		Method:			MIPSinput::ParseBinaryFile
+ * 		Method:			readInput
  *
  * 		Parameters:
  * 		Return:
  * 		Description:
  ******************************************************************************/
-void MIPSinput::ParseBinaryFile()
+void* readInput(void* object)
 {
-	int sizeBytes;
+    MIPSinput* inputInstance = (MIPSinput*) object;
+    int sizeBytes;
 	streampos start, finish;
 	uint8_t byte;
 	BinaryInfo content;
-	char currentInstruction[32], bitVal;
+	char currentInstruction[33], bitVal;
 
 	// Open the binary input file, get its size, and determine
 	// the number of instructions. Read in each instruction to a uint32_t
-	ifstream binStream (inputFileName.c_str(), ios::binary);
+	ifstream binStream (inputInstance->inputFileName.c_str(), ios::binary);
 	if(binStream)
 	{
+        memset(currentInstruction, 0, 33);
 		start = binStream.tellg();
 		binStream.seekg(0, ios::end);
 		finish = binStream.tellg();
 		sizeBytes = finish - start;
-		numLocations = sizeBytes / 4.0;
+		inputInstance->numLocations = sizeBytes / 4.0;
 		binStream.seekg(0, ios::beg);
-		for(int i=0; i<numLocations; i++)
+		for(int i=0; i<inputInstance->numLocations; i++)
 		{
+            // reset BinaryInfo structure
+            if(i)
+                content.binaryString.clear();
 			content.binaryValue = 0;
+
+			// read the binary value
 			for(int j=0; j<4; j++)
 			{
 				binStream.read((char*)&byte, 1);
-				SwapBitOrder(&byte);
+				inputInstance->SwapBitOrder(&byte);
 				content.binaryValue |= (byte<<(j*8));
 			}
-			binaryInput.push_back(content);
-        }
-		binStream.close();
-
-		// Convert the binary values to strings for decoding
-		for(int i=0; i<numLocations; i++)
-		{
+			// convert binary value into a string
 			for(int bit=0; bit<32; bit++)
 			{
-				bitVal = ( binaryInput[i].binaryValue & (1<<bit) ) ? '1' : '0';
+				bitVal = ( content.binaryValue & (1<<bit) ) ? '1' : '0';
 				currentInstruction[bit] = bitVal;
 			}
-			binaryInput[i].binaryString = string(currentInstruction);
-		}
+			content.binaryString = string(currentInstruction);
+
+			// write the BinaryInfo to the MIPS_Buffer
+			inputInstance->binaries.WriteBuffer(content);
+        }
+		binStream.close();
+		inputInstance->binaries.WriterComplete();
 	}
+	return NULL;
 }
 
 /******************************************************************************
