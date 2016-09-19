@@ -19,6 +19,43 @@
 #define DATA_ADDRESS 0
 #define INSTRUCTION_ADDRESS 1
 
+/*******************************************************/
+/* Masks to access components of each instruction type */
+// Memory
+#define MEMORY_BASE_MASK        0x03E00000
+#define MEMORY_RT_MASK          0x001F0000
+#define MEMORY_OFFSET_MASK      0x0000FFFF
+#define MEMORY_BASE_SHIFT       21
+#define MEMORY_RT_SHIFT         16
+// Immediate
+#define IMMEDIATE_RS_MASK       0x03E00000
+#define IMMEDIATE_RT_MASK       0x001F0000
+#define IMMEDIATE_VALUE_MASK    0x0000FFFF
+#define IMMEDIATE_RS_SHIFT      21
+#define IMMEDIATE_RT_SHIFT      16
+// Branch
+#define BRANCH_RS_MASK          0x03E00000
+#define BRANCH_RT_MASK          0x001F0000
+#define BRANCH_OFFSET_MASK      0x0000FFFF
+#define BRANCH_RS_SHIFT         21
+#define BRANCH_RT_SHIFT         16
+// Jump
+#define JUMP_TARGET_MASK        0x03FFFFFF
+// Regimm
+#define REGIMM_RS_MASK          0x03E00000
+#define REGIMM_OFFSET_MASK      0x0000FFFF
+#define REGIMM_RS_SHIFT         21
+// Special
+#define SPECIAL_RS_MASK         0x03E00000
+#define SPECIAL_RT_MASK         0x001F0000
+#define SPECIAL_RD_MASK         0x0000F800
+#define SPECIAL_SA_MASK         0x000007C0
+#define SPECIAL_RS_SHIFT        21
+#define SPECIAL_RT_SHIFT        16
+#define SPECIAL_RD_SHIFT        11
+#define SPECIAL_SA_SHIFT        6
+/*******************************************************/
+
 #include <string>
 #include <vector>
 #include <stdint.h>

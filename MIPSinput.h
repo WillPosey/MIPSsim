@@ -49,7 +49,6 @@ public:
 
 	// Methods to retrieve instruction data from input file
 	int     GetNumberMemoryLocations()  {return numLocations;}
-	//vector<BinaryInfo>  GetBinaryInput()            {return binaryInput;}
 
 private:
 
@@ -72,10 +71,8 @@ private:
 	int		traceEnd;
 
 	// binary input file members and methods
-	vector<BinaryInfo>       binaryInput;
-	MIPS_Buffer<BinaryInfo>  &binaries;
+	MIPS_Buffer<BinaryInfo> &binaries;
 	int		numLocations;
-	void    SwapBitOrder(uint8_t* byte);
 
 	// string to hold error message
 	bool	errorOccured;

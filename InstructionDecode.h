@@ -41,9 +41,16 @@ private:
 	WorkThread* thread;
 
 	// Methods used to decode the instructions
+	void CheckIfDataRegion(string name, bool &dataRegion)
+	{
+        if(!name.compare(instructionNames[SPECIAL][BREAK]))
+            dataRegion = true;
+    }
 	string GetOpcode(string binaryString){return binaryString.substr(0,6);}
+	string GetBitGroups(string binaryString);
 	InstructionType GetInstructionType(string opcode);
 	void GetInstructionComponents(MemoryLocation &mem);
+	void CompleteInstructionString(MemoryLocation &mem);
 	string GetInstructionName(MemoryLocation mem);
 	string GetMemoryInstructionName(string opcode);
 	string GetImmediateInstructionName(string opcode);
@@ -51,10 +58,12 @@ private:
 	string GetJumpInstructionName();
 	string GetRegimmInstructionName(string funct);
 	string GetSpecialInstructionName(string funct);
-	string GetRegister(uint32_t regVal);
-	string GetShiftAmount(uint32_t binary);
-	string GetImmediateValue(uint32_t binary);
-	string GetOffset(uint32_t binary);
+	string GetRegister(uint8_t regVal);
+	string GetJumpAddress(uint32_t address);
+	string GetShiftAmount(uint8_t binary);
+	string GetImmediateValue(uint16_t binary);
+	string GetMemoryOffset(uint16_t binary);
+	string GetBranchOffset(uint16_t binary);
 };
 
 #endif /* INSTRUCTION_DECODE_H */

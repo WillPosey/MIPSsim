@@ -16,11 +16,5 @@ void WorkThread::Activate()
     else
         isActive = true;
 }
-/*
-static void* RunFunction(void* obj)
-{
-    reinterpret_cast<WorkThread*>(obj)->Run();
-    return NULL;
-}*/
 
 
