@@ -62,27 +62,6 @@
 
 using namespace std;
 
-// the bit length of each component for each instruction type
-static const int memoryBitIntervals[]       = {6,5,5,16};
-static const int immediateBitIntervals[]    = {6,5,5,16};
-static const int branchBitIntervals[]       = {6,5,5,16};
-static const int jumpBitIntervals[]         = {6,26};
-static const int regimmBitIntervals[]       = {6,5,5,16};
-static const int specialBitIntervals[]      = {6,5,5,5,5,6};
-
-// number of components for each instruction type, indexable by the InstructionType enumeration
-static const int componentSizes[]           = {4,4,4,2,4,6};
-
-// array of all bit interval, indexable by the InstructionType enumeration
-static const int* bitIntervals[] = {
-                                        memoryBitIntervals,
-                                        immediateBitIntervals,
-                                        branchBitIntervals,
-                                        jumpBitIntervals,
-                                        regimmBitIntervals,
-                                        specialBitIntervals
-                                   };
-
 // arrays holding the instruction names for each instruction type
 static const string memoryInstructionNames[]    = {"LW","SW"};
 static const string immediateInstructionNames[] = {"ADDI","ADDIU","SLTI"};
@@ -137,21 +116,11 @@ typedef struct
     string      binaryString;
 } BinaryInfo;
 
-/* Holds the information regarding the different components of an instruction */
-typedef struct
-{
-    vector<int>         bitIntervals;
-    vector<string>      componentNames;
-    vector<uint32_t>    componentValues;
-    vector<int>         componentLengths;
-} InstructionComponents;
-
 /* Holds the information for each instruction */
 typedef struct
 {
     string                  instructionString;
     InstructionType         type;
-    InstructionComponents   components;
 } InstructionInfo;
 
 /* Holds the information for each memory location, either instruction or data memory */

@@ -49,7 +49,6 @@ private:
 	string GetOpcode(string binaryString){return binaryString.substr(0,6);}
 	string GetBitGroups(string binaryString);
 	InstructionType GetInstructionType(string opcode);
-	void GetInstructionComponents(MemoryLocation &mem);
 	void CompleteInstructionString(MemoryLocation &mem);
 	string GetInstructionName(MemoryLocation mem);
 	string GetMemoryInstructionName(string opcode);
@@ -61,7 +60,7 @@ private:
 	string GetRegister(uint8_t regVal);
 	string GetJumpAddress(uint32_t address);
 	string GetShiftAmount(uint8_t binary);
-	string GetImmediateValue(uint16_t binary);
+	string GetImmediateValue(uint16_t binary, bool unsignedValue=false);
 	string GetMemoryOffset(uint16_t binary);
 	string GetBranchOffset(uint16_t binary);
 };

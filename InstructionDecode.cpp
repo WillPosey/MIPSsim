@@ -29,11 +29,19 @@ void* decodeInstructions(void* object)
     string opcode, name;
     stringstream oStr;
     bool dataRegion = false;
+    uint32_t dataValue;
 
     while(ID_instance->memoryLocations.ReadBuffer(mem))
     {
         output.dataString = mem.content.binaryString;
-        oStr << mem.content.binaryValue;
+        dataValue = mem.content.binaryValue;
+        bool negative = ( dataValue & (1<<31) );
+        if(negative)
+        {
+            oStr << "-";
+            dataValue = (~dataValue) + 1;
+        }
+        oStr << dataValue;
         output.valueString = oStr.str();
         oStr.str("");
         oStr << mem.address;
@@ -104,17 +112,6 @@ InstructionType InstructionDecode::GetInstructionType(string opcode)
 }
 
 /******************************************************************************************
- * 		Method:			InstructionDecode::GetInstructionComponents
- *
- * 		Parameters:
- * 		Return:
- * 		Description:
- ******************************************************************************************/
-void InstructionDecode::GetInstructionComponents(MemoryLocation &mem)
-{
-}
-
-/******************************************************************************************
  * 		Method:			InstructionDecode::GetInstructionName
  *
  * 		Parameters:
@@ -138,7 +135,7 @@ string InstructionDecode::GetInstructionName(MemoryLocation mem)
         case REGIMM:
             return GetRegimmInstructionName(mem.content.binaryString.substr(11,5));
         case SPECIAL:
-            specialInstr = GetSpecialInstructionName(mem.content.binaryString.substr(26,5));
+            specialInstr = GetSpecialInstructionName(mem.content.binaryString.substr(26,6));
             if(!specialInstr.compare("SLL"))
                 if(mem.content.binaryValue == 0)
                     specialInstr = "NOP";
@@ -170,8 +167,11 @@ void InstructionDecode::CompleteInstructionString(MemoryLocation &mem)
             break;
         case IMMEDIATE:
             restOfInstruction = " " + GetRegister((binaryValue & IMMEDIATE_RT_MASK)>>IMMEDIATE_RT_SHIFT) + ", "
-                                    + GetRegister((binaryValue & IMMEDIATE_RS_MASK)>>IMMEDIATE_RS_SHIFT) + ", "
-                                    + GetImmediateValue(binaryValue & IMMEDIATE_VALUE_MASK);
+                                    + GetRegister((binaryValue & IMMEDIATE_RS_MASK)>>IMMEDIATE_RS_SHIFT) + ", ";
+            if(!instructionName.compare("ADDIU"))
+                restOfInstruction += GetImmediateValue((binaryValue & IMMEDIATE_VALUE_MASK),true);
+            else
+                restOfInstruction += GetImmediateValue(binaryValue & IMMEDIATE_VALUE_MASK);
             break;
         case BRANCH:
             restOfInstruction = " " + GetRegister((binaryValue & BRANCH_RS_MASK)>>BRANCH_RS_SHIFT) + ", ";
@@ -190,11 +190,11 @@ void InstructionDecode::CompleteInstructionString(MemoryLocation &mem)
             if( !instructionName.compare("BREAK") || !instructionName.compare("NOP") )
                 break;
             restOfInstruction = " " + GetRegister((binaryValue & SPECIAL_RD_MASK)>>SPECIAL_RD_SHIFT) + ", ";
-            if( instructionName.compare("SLL") || instructionName.compare("SRL") || instructionName.compare("SRA") )
+            if( instructionName.compare("SLL") && instructionName.compare("SRL") && instructionName.compare("SRA") )
                 restOfInstruction += GetRegister((binaryValue & SPECIAL_RS_MASK)>>SPECIAL_RS_SHIFT) + ", ";
             restOfInstruction += GetRegister((binaryValue & SPECIAL_RT_MASK)>>SPECIAL_RT_SHIFT);
             if( !instructionName.compare("SLL") || !instructionName.compare("SRL") || !instructionName.compare("SRA") )
-                restOfInstruction += ", " + GetShiftAmount((binaryValue & SPECIAL_SA_MASK)>>SPECIAL_SA_SHIFT);
+                restOfInstruction += ", #" + GetShiftAmount((binaryValue & SPECIAL_SA_MASK)>>SPECIAL_SA_SHIFT);
             break;
         default:
             restOfInstruction = "";
@@ -383,7 +383,7 @@ string InstructionDecode::GetJumpAddress(uint32_t address)
 string InstructionDecode::GetShiftAmount(uint8_t binary)
 {
     stringstream oStr;
-    oStr << binary;
+    oStr << (unsigned short)binary;
     return oStr.str();
 }
 
@@ -394,12 +394,12 @@ string InstructionDecode::GetShiftAmount(uint8_t binary)
  * 		Return:
  * 		Description:
  ******************************************************************************************/
-string InstructionDecode::GetImmediateValue(uint16_t binary)
+string InstructionDecode::GetImmediateValue(uint16_t binary, bool unsignedValue)
 {
     stringstream oStr;
     oStr << "#";
     bool negative = ( binary & (1<<15) );
-    if(negative)
+    if(negative && !unsignedValue)
     {
         oStr << "-";
         binary = (~binary) + 1;
@@ -425,10 +425,8 @@ string InstructionDecode::GetMemoryOffset(uint16_t binary)
     {
         oStr << "-";
         binary = (~binary) + 1;
-        oStr << binary;
     }
-    else
-        oStr << binary;
+    oStr << binary;
     return oStr.str();
 }
 
