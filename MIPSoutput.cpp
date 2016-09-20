@@ -34,9 +34,10 @@ void* writeOutput(void* object)
 	{
         outStream << data.dataString + " " + data.addressString + " ";
         if(data.locationType == DATA_ADDRESS)
-            outStream << data.valueString << endl;
+            outStream << data.valueString << "\r\n";
         else
-            outStream << data.instructionString << endl;
+            outStream << data.instructionString << "\r\n";
+        outStream.flush();
 	}
 	outStream.close();
 	return NULL;
