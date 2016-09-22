@@ -21,8 +21,8 @@ using namespace std;
 /******************************************************************************
  * 		Method:			MIPSinput::ParseInput
  *
- * 		Parameters:		int		optionCount: Number of command line options
- * 						char**	options: command line options
+ * 		Parameters:		int: Number of command line options
+ * 						char**: command line options
  * 		Return:			if no errors present, returns true
  * 		Description:	Parses the command line options, checking for correctness
  ******************************************************************************/
@@ -65,9 +65,10 @@ bool MIPSinput::ParseInput(int optionCount, char** options)
 /******************************************************************************
  * 		Method:			readInput
  *
- * 		Parameters:
+ * 		Parameters:     void*: the MIPSinput object
  * 		Return:
- * 		Description:
+ * 		Description:    work function supplied to WorkThread member
+ *                      reads binaries from input file and writes to the buffer
  ******************************************************************************/
 void* readInput(void* object)
 {
@@ -120,19 +121,6 @@ void* readInput(void* object)
 		inputInstance->binaries.WriterComplete();
 	}
 	return NULL;
-}
-
-/******************************************************************************
- * 		Method:			MIPSinput::PrintError
- *
- * 		Parameters:
- * 		Return:
- * 		Description:	Prints the error message defined by ParseInput()
- ******************************************************************************/
-void MIPSinput::PrintError()
-{
-	if(errorOccured)
-		cout << errorMessage << endl;
 }
 
 

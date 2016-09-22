@@ -1,12 +1,14 @@
-/**************************************************************
+/***********************************************************************************
  * 		MIPSoutput.cpp
  *
  *      Author: William Posey
  *      Course: CDA 5155
  *      Project 1: MIPS Disassembler
  *
- *
- **************************************************************/
+ *      This class is used to write the disassembled MIPS instructions and data.
+ *      It utilizes a thread to read the MIPS_Buffer written to from the
+ *      InstructionDecode stage and write to the output file
+ ***********************************************************************************/
 #include "MIPSoutput.h"
 
 #include <cstdlib>
@@ -16,13 +18,13 @@
 
 using namespace std;
 
-/******************************************************************************
+/***************************************************************************************************
  * 		Method:			writeOutput
  *
- * 		Parameters:
+ * 		Parameters:     void*: MIPSoutput object
  * 		Return:
- * 		Description:
- ******************************************************************************/
+ * 		Description:    reads MIPS_Buffer containing output information and writes to output file
+ ***************************************************************************************************/
 void* writeOutput(void* object)
 {
     MIPSoutput* outputInstance = (MIPSoutput*) object;

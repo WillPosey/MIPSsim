@@ -1,21 +1,32 @@
-/************************************************
+/****************************************************************************************
  * 		MIPSdefs.h
  *
  *      Author: William Posey
  *      Course: CDA 5155
  *      Project 1: MIPS Disassembler
- ************************************************/
+ *
+ *      This header contains definitions for structures used by the MIPS disassembler,
+ *      constant global arryas holding instruction information, and definitions for input
+ *      file attributes.
+ ****************************************************************************************/
 
 #ifndef MIPSDEFS_H_
 #define MIPSDEFS_H_
 
+#include <string>
+#include <vector>
+#include <stdint.h>
+
+using namespace std;
+
+// numder of bytes for 32 bit MIPS instruction
 #define INSTRUCTION_SIZE_BYTES 4
 
+// address for beginning of program and data region
 #define ADDRESS_START 600
 #define DATA_REGION_START 716
 
-#define NUM_INSTRUCTION_TYPES 6
-
+// definition for address types
 #define DATA_ADDRESS 0
 #define INSTRUCTION_ADDRESS 1
 
@@ -41,6 +52,7 @@
 #define BRANCH_RT_SHIFT         16
 // Jump
 #define JUMP_TARGET_MASK        0x03FFFFFF
+#define JUMP_PC_MASK            0xF0000000
 // Regimm
 #define REGIMM_RS_MASK          0x03E00000
 #define REGIMM_OFFSET_MASK      0x0000FFFF
@@ -55,12 +67,6 @@
 #define SPECIAL_RD_SHIFT        11
 #define SPECIAL_SA_SHIFT        6
 /*******************************************************/
-
-#include <string>
-#include <vector>
-#include <stdint.h>
-
-using namespace std;
 
 // arrays holding the instruction names for each instruction type
 static const string memoryInstructionNames[]    = {"LW","SW"};
@@ -101,11 +107,17 @@ typedef enum
 // instruction names (used for indexing instructionNames array)
 typedef enum
 {
+    // Memory
     LW=0,SW=1,
+    // Immediate
     ADDI=0,ADDIU=1,SLTI=2,
+    // Branch
     BEQ=0,BNE=1,BLEZ=2,BGTZ=3,
+    // Jump
     J=0,
+    // Regimm
     BLTZ=0,BGEZ=1,
+    // Special
     NOP=0,SLL=1,SRL=2,SRA=3,BREAK=4,ADD=5,ADDU=6,SUB=7,SUBU=8,AND=9,OR=10,XOR=11,NOR=12,SLT=13,SLTU=14
 } instr_names;
 

@@ -4,6 +4,8 @@
  *      Author: William Posey
  *      Course: CDA 5155
  *      Project 1: MIPS Disassembler
+ *
+ *      Header file for the MIPSoutput class
  ************************************************/
 
 #ifndef MIPS_OUTPUT_H
@@ -27,23 +29,37 @@ public:
     // allow thread function access to private members
     friend void* writeOutput(void*);
 
-	MIPSoutput(MIPS_Buffer<OutputData> &output, string outputFilename)
-              :outputInfo(output)
-              {
-                thread = new WorkThread(writeOutput,this);
-                filename = outputFilename;
-              }
+    /*
+     * Constructor assigns MIPS_Buffer<OutputData> reference,
+     * sets the output filename,
+     * and creates a new WorkThread with the writeOutput function pointer
+     */
+	MIPSoutput(MIPS_Buffer<OutputData> &output, string outputFilename) :outputInfo(output)
+    {
+        thread = new WorkThread(writeOutput,this);
+        filename = outputFilename;
+    }
+
+    // Destructor
 	virtual ~MIPSoutput(){}
 
-	void WriteResults(){ thread->Activate(); }//thread->JoinThread(); }
-	WorkThread* thread;
+    // Activates WorkThread to run the writeOutput function
+    // and waits for the output to complete
+	void WriteResults()
+	{
+        thread->Activate();
+        thread->JoinThread();
+    }
 
 private:
+    // filename to write output to
 	string	filename;
+
+	// Buffer written to from InstructionDecode stage
 	MIPS_Buffer<OutputData> &outputInfo;
 
 	// WorkThread used to carry out the writing of the disassembled results
-	//WorkThread* thread;
+	WorkThread* thread;
 };
 
 #endif /* MIPS_OUTPUT_H */

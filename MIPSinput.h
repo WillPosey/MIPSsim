@@ -4,6 +4,8 @@
  *      Author: William Posey
  *      Course: CDA 5155
  *      Project 1: MIPS Disassembler
+ *
+ *      Header file for the MIPSinput class
  ************************************************/
 
 #ifndef MIPSINPUT_H_
@@ -29,7 +31,12 @@ public:
     // allow thread function access to private members
     friend void* readInput(void*);
 
+    /*
+     * Constructor assigns MIPS_Buffer<BinaryInfo> reference
+     * and creates new WorkThread with readInput function pointer
+     */
 	MIPSinput(MIPS_Buffer<BinaryInfo> &input):binaries(input){thread = new WorkThread(readInput,this);}
+	// Destructor
 	virtual ~MIPSinput(){}
 
 	// Methods to parse command line and file input
@@ -37,7 +44,11 @@ public:
 	void	ParseBinaryFile(){thread->Activate();}
 
 	// Prints error from ParseInput()
-	void	PrintError();
+	void	PrintError()
+	{
+        if(errorOccured)
+            cout << errorMessage << endl;
+    }
 
 	// Methods to retrieve command line options
 	string 	GetInputFilename()	{return inputFileName;}
@@ -48,7 +59,7 @@ public:
 	int 	GetTraceEnd()		{return traceOptionPresent ? traceEnd : -1;}
 
 	// Methods to retrieve instruction data from input file
-	int     GetNumberMemoryLocations()  {return numLocations;}
+	int     GetNumberMemoryLocations(){return numLocations;}
 
 private:
 

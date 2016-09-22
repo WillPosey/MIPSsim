@@ -1,10 +1,12 @@
-/************************************************
+/***************************************************
  * 		InstructionDecode.h
  *
  *      Author: William Posey
  *      Course: CDA 5155
  *      Project 1: MIPS Disassembler
- ************************************************/
+ *
+ *      Header file for the InstructionDecode class
+ ***************************************************/
 
 #ifndef INSTRUCTION_DECODE_H
 #define INSTRUCTION_DECODE_H
@@ -22,13 +24,18 @@ void* decodeInstructions(void*);
 
 class InstructionDecode {
 public:
+    // allow thread function access to private members
     friend void* decodeInstructions(void*);
-	InstructionDecode(  MIPS_Buffer<MemoryLocation> &mem,
-                        MIPS_Buffer<OutputData> &out
-                    ) : memoryLocations(mem), output(out)
-                    {thread = new WorkThread(decodeInstructions, (void*) this);}
+
+    // Constructor assigns 2 MIPS_Buffer references,
+    // creates new WorkThread with decodeInstructions function pointer
+	InstructionDecode( MIPS_Buffer<MemoryLocation> &mem, MIPS_Buffer<OutputData> &out ) : memoryLocations(mem), output(out)
+    {thread = new WorkThread(decodeInstructions, (void*) this);}
+
+    // Destructor
 	virtual ~InstructionDecode(){}
 
+    // run decodeInstructions through WorkThread
 	void Decode(){thread->Activate();}
 
 private:
@@ -58,7 +65,7 @@ private:
 	string GetRegimmInstructionName(string funct);
 	string GetSpecialInstructionName(string funct);
 	string GetRegister(uint8_t regVal);
-	string GetJumpAddress(uint32_t address);
+	string GetJumpAddress(uint32_t address, uint32_t pcAddress);
 	string GetShiftAmount(uint8_t binary);
 	string GetImmediateValue(uint16_t binary, bool unsignedValue=false);
 	string GetMemoryOffset(uint16_t binary);
